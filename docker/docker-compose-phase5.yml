@@ -1,0 +1,14 @@
+services:
+  trino-coordinator:
+    image: trinodb/trino:435
+    container_name: trino-coordinator
+    ports:
+      - "8090:8080"
+    volumes:
+      - ./docker/trino/etc:/etc/trino:ro
+    networks:
+      - taxi-network
+
+networks:
+  taxi-network:
+    external: true
