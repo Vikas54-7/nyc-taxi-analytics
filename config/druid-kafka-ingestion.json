@@ -1,0 +1,54 @@
+{
+  "type": "kafka",
+  "spec": {
+    "ioConfig": {
+      "type": "kafka",
+      "consumerProperties": {
+        "bootstrap.servers": "kafka:9092"
+      },
+      "topic": "nyc-taxi-trips",
+      "inputFormat": {
+        "type": "json"
+      },
+      "useEarliestOffset": true
+    },
+    "tuningConfig": {
+      "type": "kafka",
+      "maxRowsPerSegment": 5000000,
+      "maxRowsInMemory": 100000
+    },
+    "dataSchema": {
+      "dataSource": "nyc_taxi_trips",
+      "timestampSpec": {
+        "column": "pickup_datetime",
+        "format": "iso"
+      },
+      "dimensionsSpec": {
+        "dimensions": [
+          "trip_id",
+          "vendor_id",
+          "payment_type",
+          "borough",
+          {"name": "pickup_location_id", "type": "long"},
+          {"name": "dropoff_location_id", "type": "long"},
+          {"name": "passenger_count", "type": "long"}
+        ]
+      },
+      "metricsSpec": [
+        {"type": "count", "name": "trip_count"},
+        {"type": "doubleSum", "name": "total_fare", "fieldName": "fare_amount"},
+        {"type": "doubleSum", "name": "total_tips", "fieldName": "tip_amount"},
+        {"type": "doubleSum", "name": "total_amount_sum", "fieldName": "total_amount"},
+        {"type": "doubleSum", "name": "total_distance", "fieldName": "trip_distance"},
+        {"type": "doubleMin", "name": "min_fare", "fieldName": "fare_amount"},
+        {"type": "doubleMax", "name": "max_fare", "fieldName": "fare_amount"}
+      ],
+      "granularitySpec": {
+        "type": "uniform",
+        "segmentGranularity": "HOUR",
+        "queryGranularity": "MINUTE",
+        "rollup": true
+      }
+    }
+  }
+}
