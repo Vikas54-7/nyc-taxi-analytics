@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NYC Taxi Analytics - Architecture</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f23; color: #fff; padding: 40px; }
+        h1 { text-align: center; color: #f39c12; margin-bottom: 40px; }
+        .diagram { max-width: 1200px; margin: 0 auto; }
+        .row { display: flex; justify-content: center; align-items: center; margin: 20px 0; gap: 20px; }
+        .box { background: #1a1a3e; border: 2px solid #f39c12; border-radius: 10px; padding: 20px; text-align: center; min-width: 150px; }
+        .box h3 { color: #f39c12; font-size: 14px; margin-bottom: 5px; }
+        .box p { color: #888; font-size: 12px; }
+        .arrow { color: #f39c12; font-size: 30px; }
+        .arrow-down { text-align: center; color: #f39c12; font-size: 30px; margin: 10px 0; }
+        .section { background: #16213e; border-radius: 15px; padding: 30px; margin: 30px auto; max-width: 1000px; }
+        .section h2 { color: #f39c12; margin-bottom: 20px; text-align: center; }
+        .airflow-tasks { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .task { background: #2ecc71; color: #000; padding: 10px 15px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        .task-arrow { color: #2ecc71; font-size: 20px; display: flex; align-items: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: #f39c12; }
+        .tech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
+        .tech-box { background: #1a1a3e; padding: 15px; border-radius: 8px; text-align: center; }
+        .tech-box img { width: 40px; height: 40px; margin-bottom: 10px; }
+        .tech-box h4 { color: #f39c12; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <h1>🚕 NYC Taxi Analytics Platform - Architecture</h1>
+    
+    <div class="diagram">
+        <!-- Data Flow -->
+        <div class="row">
+            <div class="box">
+                <h3>📁 NYC TLC Data</h3>
+                <p>9.5M Parquet Records</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="box">
+                <h3>🐍 Kafka Producer</h3>
+                <p>Python Streaming</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="box">
+                <h3>📨 Apache Kafka</h3>
+                <p>Message Queue</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="box">
+                <h3>⚙️ Kafka Consumer</h3>
+                <p>Data Processing</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="box">
+                <h3>🦆 DuckDB</h3>
+                <p>Data Warehouse</p>
+            </div>
+        </div>
+        
+        <div class="arrow-down">↓</div>
+        
+        <div class="row">
+            <div class="box">
+                <h3>📊 Analytics</h3>
+                <p>Python Scripts</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="box">
+                <h3>📈 Dashboard</h3>
+                <p>HTML/CSS/JS</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Airflow Section -->
+    <div class="section">
+        <h2>⏰ Apache Airflow - Pipeline Orchestration</h2>
+        <div class="airflow-tasks">
+            <div class="task">Start</div>
+            <div class="task-arrow">→</div>
+            <div class="task">Check Kafka</div>
+            <div class="task-arrow">→</div>
+            <div class="task">Produce Data</div>
+            <div class="task-arrow">→</div>
+            <div class="task">Consume Data</div>
+            <div class="task-arrow">→</div>
+            <div class="task">Quality Check</div>
+            <div class="task-arrow">→</div>
+            <div class="task">Generate Report</div>
+            <div class="task-arrow">→</div>
+            <div class="task">End</div>
+        </div>
+        <p style="text-align: center; margin-top: 15px; color: #888;">Schedule: Daily @ 6:00 AM | UI: localhost:8085</p>
+    </div>
+    
+    <!-- Tech Stack -->
+    <div class="section">
+        <h2>🛠️ Tech Stack</h2>
+        <div class="tech-grid">
+            <div class="tech-box"><h4>Apache Kafka</h4><p>Streaming</p></div>
+            <div class="tech-box"><h4>Python</h4><p>Processing</p></div>
+            <div class="tech-box"><h4>DuckDB</h4><p>Warehouse</p></div>
+            <div class="tech-box"><h4>Airflow</h4><p>Orchestration</p></div>
+            <div class="tech-box"><h4>Docker</h4><p>Containers</p></div>
+            <div class="tech-box"><h4>Pandas</h4><p>Data Analysis</p></div>
+            <div class="tech-box"><h4>HTML/JS</h4><p>Dashboard</p></div>
+            <div class="tech-box"><h4>Git</h4><p>Version Control</p></div>
+        </div>
+    </div>
+    
+    <!-- Metrics -->
+    <div class="section">
+        <h2>📊 Key Metrics</h2>
+        <table>
+            <tr><th>Metric</th><th>Value</th></tr>
+            <tr><td>Total Records Available</td><td>9,554,778</td></tr>
+            <tr><td>Records Processed</td><td>86,980</td></tr>
+            <tr><td>Total Revenue Analyzed</td><td>$2,662,635</td></tr>
+            <tr><td>Processing Rate</td><td>57 msg/sec</td></tr>
+            <tr><td>Data Quality Score</td><td>99%+</td></tr>
+            <tr><td>Peak Hour</td><td>12:00 PM (7,708 trips)</td></tr>
+        </table>
+    </div>
+    
+    <!-- Services -->
+    <div class="section">
+        <h2>🌐 Services & Ports</h2>
+        <table>
+            <tr><th>Service</th><th>Port</th><th>URL</th></tr>
+            <tr><td>Kafka UI</td><td>8080</td><td>http://localhost:8080</td></tr>
+            <tr><td>Airflow</td><td>8085</td><td>http://localhost:8085</td></tr>
+            <tr><td>Kafka Broker</td><td>9092</td><td>localhost:9092</td></tr>
+            <tr><td>PostgreSQL</td><td>5432</td><td>localhost:5432</td></tr>
+        </table>
+    </div>
+    
+    <p style="text-align: center; margin-top: 40px; color: #666;">
+        Built by Vikas | Data: NYC TLC Official Records | 
+        <a href="https://github.com/Vikas54-7/nyc-taxi-analytics" style="color: #f39c12;">GitHub Repo</a>
+    </p>
+</body>
+</html>
