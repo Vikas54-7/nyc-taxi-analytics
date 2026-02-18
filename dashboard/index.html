@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NYC Taxi Analytics</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #1a1a2e; color: #fff; padding: 40px; }
+        h1 { color: #f39c12; text-align: center; margin-bottom: 40px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto 40px; }
+        .card { background: #16213e; padding: 30px; border-radius: 15px; text-align: center; }
+        .card h3 { color: #888; font-size: 14px; margin-bottom: 10px; }
+        .card .value { font-size: 36px; color: #f39c12; font-weight: bold; }
+        .card .unit { color: #666; font-size: 14px; }
+        .section { background: #16213e; padding: 30px; border-radius: 15px; max-width: 1200px; margin: 0 auto 20px; }
+        .section h2 { color: #f39c12; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: #f39c12; }
+        .bar { background: #f39c12; height: 20px; border-radius: 3px; }
+        .footer { text-align: center; margin-top: 40px; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>🚕 NYC Taxi Analytics Dashboard</h1>
+    
+    <div class="grid">
+        <div class="card">
+            <h3>TOTAL TRIPS</h3>
+            <div class="value">86,980</div>
+        </div>
+        <div class="card">
+            <h3>TOTAL REVENUE</h3>
+            <div class="value">$2.66M</div>
+        </div>
+        <div class="card">
+            <h3>AVG FARE</h3>
+            <div class="value">$30.61</div>
+        </div>
+        <div class="card">
+            <h3>AVG DISTANCE</h3>
+            <div class="value">4.41</div>
+            <div class="unit">miles</div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>💳 Payment Types</h2>
+        <table>
+            <tr><th>Type</th><th>Trips</th><th>Revenue</th><th>Share</th></tr>
+            <tr><td>Credit Card</td><td>65,292</td><td>$2,169,190</td><td><div class="bar" style="width: 75%"></div></td></tr>
+            <tr><td>Cash</td><td>19,064</td><td>$482,910</td><td><div class="bar" style="width: 22%"></div></td></tr>
+            <tr><td>Dispute</td><td>1,862</td><td>$3,769</td><td><div class="bar" style="width: 2%"></div></td></tr>
+            <tr><td>No Charge</td><td>762</td><td>$6,766</td><td><div class="bar" style="width: 1%"></div></td></tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h2>📍 Top Pickup Locations</h2>
+        <table>
+            <tr><th>Rank</th><th>Location ID</th><th>Trips</th><th>Area</th></tr>
+            <tr><td>1</td><td>132</td><td>7,817</td><td>JFK Airport</td></tr>
+            <tr><td>2</td><td>186</td><td>4,077</td><td>Penn Station</td></tr>
+            <tr><td>3</td><td>138</td><td>3,815</td><td>LaGuardia Airport</td></tr>
+            <tr><td>4</td><td>161</td><td>3,602</td><td>Midtown Center</td></tr>
+            <tr><td>5</td><td>230</td><td>3,056</td><td>Times Square</td></tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h2>⏰ Peak Hours</h2>
+        <table>
+            <tr><th>Hour</th><th>Trips</th><th>Volume</th></tr>
+            <tr><td>12:00 PM</td><td>7,708</td><td><div class="bar" style="width: 100%"></div></td></tr>
+            <tr><td>11:00 AM</td><td>7,006</td><td><div class="bar" style="width: 91%"></div></td></tr>
+            <tr><td>01:00 PM</td><td>6,327</td><td><div class="bar" style="width: 82%"></div></td></tr>
+            <tr><td>10:00 AM</td><td>6,103</td><td><div class="bar" style="width: 79%"></div></td></tr>
+            <tr><td>09:00 AM</td><td>5,158</td><td><div class="bar" style="width: 67%"></div></td></tr>
+        </table>
+    </div>
+    
+    <div class="footer">
+        <p>Built with Kafka, PySpark & DuckDB | Data: NYC TLC Official Records (Jan-Mar 2024)</p>
+        <p>Pipeline: Kafka Producer → Kafka Consumer → DuckDB → Dashboard</p>
+    </div>
+</body>
+</html>

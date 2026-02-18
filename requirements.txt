@@ -1,0 +1,2 @@
+# Spark Streaming (add to existing requirements.txt)
+findspark==2.0.1
