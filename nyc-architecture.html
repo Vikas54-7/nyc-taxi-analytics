@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Taxi Analytics - Architecture | Vikas Pabba</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0f0f23; color: #fff; min-height: 100vh; }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            text-align: center;
+        }
+        .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+        .back-link {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.3); }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        .diagram {
+            background: #1a1a3e;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .diagram h2 {
+            color: #f39c12;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .flow-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        .flow-box {
+            background: #16213e;
+            border: 2px solid #f39c12;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            min-width: 140px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .flow-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.3);
+        }
+        .flow-box .icon { font-size: 2rem; margin-bottom: 10px; }
+        .flow-box h4 { color: #f39c12; font-size: 0.9rem; margin-bottom: 5px; }
+        .flow-box p { color: #888; font-size: 0.75rem; }
+        .arrow { color: #f39c12; font-size: 1.5rem; font-weight: bold; }
+        .arrow-down { 
+            text-align: center; 
+            color: #f39c12; 
+            font-size: 2rem; 
+            margin: 1rem 0;
+        }
+        
+        .airflow-section {
+            background: #1a1a3e;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .airflow-section h2 {
+            color: #f39c12;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .dag-flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .dag-task {
+            background: #2ecc71;
+            color: #000;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .dag-arrow { color: #2ecc71; font-size: 1.2rem; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: #1a1a3e;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f39c12;
+        }
+        .stat-card .label {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .tech-section {
+            background: #1a1a3e;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .tech-section h2 {
+            color: #f39c12;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        .tech-item {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .tech-item h4 { color: #f39c12; font-size: 0.95rem; }
+        .tech-item p { color: #888; font-size: 0.8rem; margin-top: 5px; }
+        
+        .services-section {
+            background: #1a1a3e;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .services-section h2 {
+            color: #f39c12;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th { color: #f39c12; font-weight: 600; }
+        td { color: #ccc; }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        .footer a { color: #f39c12; text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .flow-row { flex-direction: column; }
+            .arrow { transform: rotate(90deg); }
+            .header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header" style="position: relative;">
+        <a href="index.html" class="back-link">← Back to Portfolio</a>
+        <h1>🚕 NYC Taxi Analytics Platform</h1>
+        <p>Real-Time Data Engineering Architecture</p>
+    </div>
+    
+    <div class="container">
+        <!-- Key Metrics - UPDATED WITH REAL NUMBERS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="value">9.2M</div>
+                <div class="label">Total Trips Processed</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">$253M</div>
+                <div class="label">Revenue Tracked</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">$27.51</div>
+                <div class="label">Avg Fare</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">57/sec</div>
+                <div class="label">Kafka Processing Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">99%+</div>
+                <div class="label">Data Quality Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="value"><100ms</div>
+                <div class="label">Query Response Time</div>
+            </div>
+        </div>
+        
+        <!-- Architecture Diagram -->
+        <div class="diagram">
+            <h2>🏗️ System Architecture</h2>
+            
+            <!-- Data Flow -->
+            <div class="flow-row">
+                <div class="flow-box">
+                    <div class="icon">📄</div>
+                    <h4>NYC TLC Data</h4>
+                    <p>Parquet Files</p>
+                    <p>9.2M Records</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">🚀</div>
+                    <h4>Kafka Producer</h4>
+                    <p>Python</p>
+                    <p>57 msg/sec</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">📨</div>
+                    <h4>Apache Kafka</h4>
+                    <p>Message Queue</p>
+                    <p>Streaming</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">⚙️</div>
+                    <h4>Kafka Consumer</h4>
+                    <p>Python</p>
+                    <p>Processing</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">🦆</div>
+                    <h4>DuckDB</h4>
+                    <p>OLAP Warehouse</p>
+                    <p>Sub-100ms</p>
+                </div>
+            </div>
+            
+            <div class="arrow-down">↓</div>
+            
+            <div class="flow-row">
+                <div class="flow-box">
+                    <div class="icon">📊</div>
+                    <h4>Analytics Engine</h4>
+                    <p>Python</p>
+                    <p>SQL Queries</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">🌐</div>
+                    <h4>REST API</h4>
+                    <p>Flask</p>
+                    <p>JSON</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="flow-box">
+                    <div class="icon">📈</div>
+                    <h4>Dashboard</h4>
+                    <p>HTML/CSS/JS</p>
+                    <p>Visualization</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Airflow DAG -->
+        <div class="airflow-section">
+            <h2>⏰ Apache Airflow - Pipeline Orchestration</h2>
+            <div class="dag-flow">
+                <div class="dag-task">Start</div>
+                <div class="dag-arrow">→</div>
+                <div class="dag-task">Check Kafka</div>
+                <div class="dag-arrow">→</div>
+                <div class="dag-task">Produce Data</div>
+                <div class="dag-arrow">→</div>
+                <div class="dag-task">Consume Data</div>
+                <div class="dag-arrow">→</div>
+                <div class="dag-task">Quality Check</div>
+                <div class="dag-arrow">→</div>
+                <div class="dag-task">Analytics</div>
+                <div class="dag-arrow">→</div>
+                <div class="dag-task">Generate Report</div>
+                <div class="dag-arrow">→</div>
+                <div class="dag-task">End</div>
+            </div>
+            <p style="text-align: center; margin-top: 1rem; color: #888;">
+                Schedule: Daily @ 6:00 AM | 10 Tasks | 99%+ Success Rate
+            </p>
+        </div>
+        
+        <!-- Tech Stack -->
+        <div class="tech-section">
+            <h2>🛠️ Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h4>Apache Kafka</h4>
+                    <p>Message Streaming</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Python</h4>
+                    <p>Data Processing</p>
+                </div>
+                <div class="tech-item">
+                    <h4>DuckDB</h4>
+                    <p>OLAP Analytics</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Apache Airflow</h4>
+                    <p>Orchestration</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Docker</h4>
+                    <p>Containerization</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Pandas</h4>
+                    <p>Data Analysis</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Flask</h4>
+                    <p>REST API</p>
+                </div>
+                <div class="tech-item">
+                    <h4>Chart.js</h4>
+                    <p>Visualization</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Services -->
+        <div class="services-section">
+            <h2>🌐 Services & Endpoints</h2>
+            <table>
+                <tr>
+                    <th>Service</th>
+                    <th>Port</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>Kafka Broker</td>
+                    <td>9092</td>
+                    <td>Message streaming (57 msg/sec)</td>
+                </tr>
+                <tr>
+                    <td>Zookeeper</td>
+                    <td>2181</td>
+                    <td>Kafka coordination</td>
+                </tr>
+                <tr>
+                    <td>Flask API</td>
+                    <td>5000</td>
+                    <td>REST endpoints</td>
+                </tr>
+                <tr>
+                    <td>DuckDB</td>
+                    <td>Local</td>
+                    <td>Analytics warehouse (223MB)</td>
+                </tr>
+                <tr>
+                    <td>Airflow</td>
+                    <td>8085</td>
+                    <td>DAG management</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>
+            Built by <strong>Vikas Pabba</strong> | 
+            <a href="https://github.com/Vikas54-7/nyc-taxi-analytics" target="_blank">View on GitHub</a> |
+            <a href="nyc-dashboard.html">View Dashboard →</a>
+        </p>
+    </div>
+</body>
+</html>

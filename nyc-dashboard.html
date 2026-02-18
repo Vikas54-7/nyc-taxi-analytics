@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Taxi Analytics - Dashboard | Vikas Pabba</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #1a1a2e; color: #fff; min-height: 100vh; }
+        
+        .header {
+            background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .header p { opacity: 0.9; font-size: 1.1rem; }
+        .back-link {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.3); }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .kpi-card {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .kpi-card:hover { transform: translateY(-5px); }
+        .kpi-card h3 { color: #888; font-size: 0.85rem; margin-bottom: 10px; text-transform: uppercase; }
+        .kpi-card .value { font-size: 2.5rem; font-weight: 700; color: #f39c12; }
+        .kpi-card .unit { color: #666; font-size: 0.9rem; margin-top: 5px; }
+        
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .chart-card {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        .chart-card h3 { color: #f39c12; margin-bottom: 1rem; font-size: 1.1rem; }
+        
+        .bar-chart { display: flex; flex-direction: column; gap: 8px; }
+        .bar-row { display: flex; align-items: center; gap: 10px; }
+        .bar-label { width: 60px; font-size: 0.85rem; color: #888; }
+        .bar-container { flex: 1; background: #0f0f23; border-radius: 4px; height: 24px; }
+        .bar {
+            height: 100%;
+            background: linear-gradient(90deg, #f39c12, #e74c3c);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+            min-width: 40px;
+        }
+        
+        .donut-container { text-align: center; }
+        .donut-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        .legend-item { display: flex; align-items: center; gap: 10px; }
+        .legend-color { width: 16px; height: 16px; border-radius: 4px; }
+        .legend-label { flex: 1; color: #888; font-size: 0.9rem; }
+        .legend-value { color: #fff; font-weight: 600; }
+        
+        .table-section {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .table-section h3 { color: #f39c12; margin-bottom: 1rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #333; }
+        th { color: #f39c12; font-weight: 600; font-size: 0.9rem; }
+        td { color: #ccc; }
+        tr:hover { background: rgba(243, 156, 18, 0.1); }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .insight-card {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 1.5rem;
+            border-left: 4px solid #f39c12;
+        }
+        .insight-card h4 { color: #f39c12; margin-bottom: 0.5rem; font-size: 1rem; }
+        .insight-card p { color: #888; font-size: 0.9rem; line-height: 1.5; }
+        .insight-card .highlight { color: #fff; font-weight: 600; font-size: 1.5rem; display: block; margin-top: 0.5rem; }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        .footer a { color: #f39c12; text-decoration: none; }
+        
+        @media (max-width: 768px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
+            .insights-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="back-link">← Back to Portfolio</a>
+        <h1>🚕 NYC Taxi Analytics Dashboard</h1>
+        <p>Real-Time Insights from 9.2M+ Taxi Trips</p>
+    </div>
+    
+    <div class="container">
+        <!-- KPI Cards - UPDATED WITH REAL NUMBERS -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <h3>Total Trips</h3>
+                <div class="value">9.2M</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Total Revenue</h3>
+                <div class="value">$253M</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Avg Fare</h3>
+                <div class="value">$27.51</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Avg Distance</h3>
+                <div class="value">4.14</div>
+                <div class="unit">miles</div>
+            </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="charts-row">
+            <!-- Hourly Distribution -->
+            <div class="chart-card">
+                <h3>📊 Trips by Hour of Day</h3>
+                <div class="bar-chart">
+                    <div class="bar-row">
+                        <span class="bar-label">6 PM</span>
+                        <div class="bar-container"><div class="bar" style="width: 100%">666,981</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">5 PM</span>
+                        <div class="bar-container"><div class="bar" style="width: 95%">632,753</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">4 PM</span>
+                        <div class="bar-container"><div class="bar" style="width: 86%">574,112</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">3 PM</span>
+                        <div class="bar-container"><div class="bar" style="width: 84%">563,048</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">2 PM</span>
+                        <div class="bar-container"><div class="bar" style="width: 82%">546,282</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">1 PM</span>
+                        <div class="bar-container"><div class="bar" style="width: 76%">509,859</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">12 PM</span>
+                        <div class="bar-container"><div class="bar" style="width: 74%">493,967</div></div>
+                    </div>
+                    <div class="bar-row">
+                        <span class="bar-label">4 AM</span>
+                        <div class="bar-container"><div class="bar" style="width: 8%">52,827</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Types -->
+            <div class="chart-card">
+                <h3>💳 Payment Types</h3>
+                <div class="donut-container">
+                    <svg viewBox="0 0 200 200" width="180" height="180">
+                        <!-- Credit Card - 78% -->
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#f39c12" stroke-width="30"
+                            stroke-dasharray="391 503" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+                        <!-- Cash - 14% -->
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#3498db" stroke-width="30"
+                            stroke-dasharray="70 503" stroke-dashoffset="-391" transform="rotate(-90 100 100)"/>
+                        <!-- Other - 8% -->
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="#e74c3c" stroke-width="30"
+                            stroke-dasharray="42 503" stroke-dashoffset="-461" transform="rotate(-90 100 100)"/>
+                        <text x="100" y="95" text-anchor="middle" fill="#fff" font-size="24" font-weight="bold">78%</text>
+                        <text x="100" y="115" text-anchor="middle" fill="#888" font-size="12">Credit Card</text>
+                    </svg>
+                    <div class="donut-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f39c12"></div>
+                            <span class="legend-label">Credit Card</span>
+                            <span class="legend-value">7.2M</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #3498db"></div>
+                            <span class="legend-label">Cash</span>
+                            <span class="legend-value">1.3M</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #e74c3c"></div>
+                            <span class="legend-label">Other</span>
+                            <span class="legend-value">737K</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Locations Table -->
+        <div class="table-section">
+            <h3>📍 Top Pickup Locations (From Full Dataset)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Location ID</th>
+                        <th>Area</th>
+                        <th>Trips</th>
+                        <th>% of Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>132</td>
+                        <td>JFK Airport</td>
+                        <td>~800K</td>
+                        <td>8.7%</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>138</td>
+                        <td>LaGuardia Airport</td>
+                        <td>~420K</td>
+                        <td>4.6%</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>161</td>
+                        <td>Midtown Center</td>
+                        <td>~380K</td>
+                        <td>4.1%</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>230</td>
+                        <td>Times Square</td>
+                        <td>~350K</td>
+                        <td>3.8%</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>186</td>
+                        <td>Penn Station</td>
+                        <td>~340K</td>
+                        <td>3.7%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Key Insights -->
+        <div class="insights-grid">
+            <div class="insight-card">
+                <h4>🕕 Peak Hour</h4>
+                <p>Highest demand occurs during evening rush hour</p>
+                <span class="highlight">6:00 PM</span>
+            </div>
+            <div class="insight-card">
+                <h4>💵 Avg Tip Rate</h4>
+                <p>Average tip on credit card payments</p>
+                <span class="highlight">$4.20</span>
+            </div>
+            <div class="insight-card">
+                <h4>✈️ Airport Share</h4>
+                <p>JFK + LaGuardia combined</p>
+                <span class="highlight">13.3%</span>
+            </div>
+        </div>
+        
+        <!-- Data Pipeline Info -->
+        <div class="table-section">
+            <h3>⚙️ Data Pipeline Metrics</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Data Source</td>
+                    <td>NYC TLC Official Trip Records (Jan-Mar 2024)</td>
+                </tr>
+                <tr>
+                    <td>Total Records Processed</td>
+                    <td>9,211,252 trips</td>
+                </tr>
+                <tr>
+                    <td>Total Revenue Tracked</td>
+                    <td>$253,375,728.66</td>
+                </tr>
+                <tr>
+                    <td>Processing Rate</td>
+                    <td>57 messages/second (Kafka)</td>
+                </tr>
+                <tr>
+                    <td>Data Quality Score</td>
+                    <td>99%+</td>
+                </tr>
+                <tr>
+                    <td>Query Performance</td>
+                    <td>Sub-second (DuckDB OLAP)</td>
+                </tr>
+                <tr>
+                    <td>Pipeline Schedule</td>
+                    <td>Daily @ 6:00 AM (Airflow)</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>
+            Built by <strong>Vikas Pabba</strong> | 
+            <a href="https://github.com/Vikas54-7/nyc-taxi-analytics" target="_blank">View on GitHub</a> |
+            <a href="nyc-architecture.html">View Architecture →</a>
+        </p>
+    </div>
+</body>
+</html>
